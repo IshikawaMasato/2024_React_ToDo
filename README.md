@@ -1,3 +1,18 @@
+# todo_app
+TODOアプリ
+
+# アプリの説明
+WEB上からTODOの管理ができる
+
+# アプリの機能一覧
+タスク管理  
+タスクの登録  
+タスクの編集  
+タスクの一覧  
+タスクの削除  
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
