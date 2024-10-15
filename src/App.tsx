@@ -1,26 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { auth } from "./firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
-function App() {
+const Signup: any = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSignup = async (e: any) => {
+    e.preventDefault();
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("User registered successfully");
+    } catch (error: any) {
+      alert(error.message);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+        <form onSubmit={handleSignup}>
+          <div>
+            <label>Email</label>
+            <div>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+              />
+            </div>
+          </div>
+          <div>
+            <label>Password</label>
+            <div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+              />
+            </div>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <button type="submit">Sign Up</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
-}
+};
 
-export default App;
+export default Signup;
