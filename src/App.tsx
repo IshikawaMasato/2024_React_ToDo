@@ -1,52 +1,34 @@
-import React, { useState } from "react";
+// src/App.tsx
+import React, { useState, useEffect } from "react";
 import { auth } from "./firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
+import Signup from "./components/Auth/Signup";
 
-const Signup: any = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const App: React.FC = () => {
+  const [user, setUser] = useState<any>(null);
 
-  const handleSignup = async (e: any) => {
-    e.preventDefault();
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("User registered successfully");
-    } catch (error: any) {
-      alert(error.message);
-    }
-  };
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <div>
-      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-        <form onSubmit={handleSignup}>
-          <div>
-            <label>Email</label>
-            <div>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-              />
-            </div>
-          </div>
-          <div>
-            <label>Password</label>
-            <div>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-              />
-            </div>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <button type="submit">Sign Up</button>
-          </div>
-        </form>
-      </div>
+      {user ? (
+        <div>
+          <h1>Welcome, {user.email}</h1>
+        </div>
+      ) : (
+        <div>
+          <Signup />
+          {/* ログイン画面のコンポーネントをここに追加予定 */}
+        </div>
+      )}
     </div>
   );
 };
