@@ -33,4 +33,4 @@ const App: React.FC = () => {
   );
 };
 
-export default Signup;
+export default App;
