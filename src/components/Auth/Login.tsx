@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
       // ログイン成功時の処理を追加
+      alert("ログインに成功しました");
+      navigate("/TodoList");
     } catch (err) {
-      setError("ログインに失敗しました。");
+      setError("ログインに失敗しました");
     }
   };
 

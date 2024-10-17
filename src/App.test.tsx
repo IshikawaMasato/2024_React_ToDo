@@ -1,10 +1,18 @@
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import Signup from "./components/Auth/Signup";
-import { auth } from "./firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  signOut,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
 
-jest.mock("firebase/auth");
+jest.mock("firebase/auth", () => ({
+  getAuth: jest.fn(() => ({
+    currentUser: { email: "test@example.com" },
+  })),
+  signOut: jest.fn(),
+  createUserWithEmailAndPassword: jest.fn(),
+}));
 
 describe("Signup Component", () => {
   const setup = () => {
@@ -32,7 +40,7 @@ describe("Signup Component", () => {
     fireEvent.click(signupButton);
 
     expect(createUserWithEmailAndPassword).toHaveBeenCalledWith(
-      auth,
+      expect.any(Object), // auth
       "test@example.com",
       "password123"
     );
@@ -83,6 +91,26 @@ describe("Signup Component", () => {
 
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith("Registration failed");
+    });
+
+    alertSpy.mockRestore();
+  });
+});
+
+describe("Logout Component", () => {
+  it("ログアウトが成功するか", async () => {
+    const { default: Logout } = await import("./components/Auth/Logout");
+
+    render(<Logout />);
+
+    const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
+
+    fireEvent.click(screen.getByText("Logout"));
+
+    expect(signOut).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(alertSpy).toHaveBeenCalledWith("User logged out successfully");
     });
 
     alertSpy.mockRestore();
