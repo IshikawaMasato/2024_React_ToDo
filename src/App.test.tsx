@@ -1,56 +1,96 @@
-import React, { useState } from "react";
+import React from "react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
+import Signup from "./components/Auth/Signup";
 import { auth } from "./firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
-const Signup: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+jest.mock("firebase/auth");
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("User registered successfully");
-    } catch (error: any) {
-      alert(error.message);
-    }
+describe("Signup Component", () => {
+  const setup = () => {
+    render(<Signup />);
+    const emailInput = screen.getByPlaceholderText("Email");
+    const passwordInput = screen.getByPlaceholderText("Password");
+    const confirmPasswordInput = screen.getByPlaceholderText("ConfirmPassword");
+    const signupButton = screen.getByText("Sign Up");
+    return { emailInput, passwordInput, confirmPasswordInput, signupButton };
   };
 
-  return (
-    <div>
-      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-        <form onSubmit={handleSignup}>
-          <div>
-            <label htmlFor="email">Email</label>
-            <div>
-              <input
-                id="email" // 追加
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-              />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="password">Password</label>
-            <div>
-              <input
-                id="password" // 追加
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-              />
-            </div>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <button type="submit">Sign Up</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
+  it("登録成功で200が返る", async () => {
+    (createUserWithEmailAndPassword as jest.Mock).mockResolvedValue({
+      user: { email: "test@example.com" },
+    });
 
-export default Signup;
+    const { emailInput, passwordInput, confirmPasswordInput, signupButton } =
+      setup();
+
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(confirmPasswordInput, {
+      target: { value: "password123" },
+    });
+    fireEvent.click(signupButton);
+
+    expect(createUserWithEmailAndPassword).toHaveBeenCalledWith(
+      auth,
+      "test@example.com",
+      "password123"
+    );
+
+    const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
+
+    await waitFor(() => {
+      expect(alertSpy).toHaveBeenCalledWith("User registered successfully");
+    });
+
+    alertSpy.mockRestore();
+  });
+
+  it("パスワードが一致しない場合、エラーメッセージが表示される", () => {
+    const { emailInput, passwordInput, confirmPasswordInput, signupButton } =
+      setup();
+
+    const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
+
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(confirmPasswordInput, {
+      target: { value: "password456" },
+    });
+    fireEvent.click(signupButton);
+
+    expect(alertSpy).toHaveBeenCalledWith("Passwords do not match");
+
+    alertSpy.mockRestore();
+  });
+
+  it("登録失敗でエラーメッセージが表示される", async () => {
+    (createUserWithEmailAndPassword as jest.Mock).mockRejectedValue(
+      new Error("Registration failed")
+    );
+
+    const { emailInput, passwordInput, confirmPasswordInput, signupButton } =
+      setup();
+
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(confirmPasswordInput, {
+      target: { value: "password123" },
+    });
+    fireEvent.click(signupButton);
+
+    const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
+
+    await waitFor(() => {
+      expect(alertSpy).toHaveBeenCalledWith("Registration failed");
+    });
+
+    alertSpy.mockRestore();
+  });
+});
+
+// 環境変数のテスト
+test("Firebase projectIdが設定されているか", () => {
+  console.log(process.env.REACT_APP_FIREBASE_PROJECT_ID); // 環境変数の値を出力
+  expect(process.env.REACT_APP_FIREBASE_PROJECT_ID).toBeDefined(); // projectId が定義されているか確認
+});

@@ -1,13 +1,14 @@
+// src/components/Auth/Signup.tsx
 import React, { useState } from "react";
 import { auth } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
-const Signup: any = () => {
+const Signup: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSignup = async (e: any) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       alert("Passwords do not match");
@@ -48,7 +49,7 @@ const Signup: any = () => {
             </div>
           </div>
           <div>
-            <label>ConfirmPassword</label>
+            <label>Confirm Password</label>
             <div>
               <input
                 type="password"
