@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import AddTodo from "./components/ToDo/AddTodo";
 // import PrivateRoute from "./routes/PrivateRoute";
 // import Header from "./components/Header";
-import AuthRoutes from "./components/routes/AuthRoute";
+import AuthRoutes from "./components/routes/AuthRoutes";
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);

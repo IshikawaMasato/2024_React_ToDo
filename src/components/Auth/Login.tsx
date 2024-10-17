@@ -1,61 +1,49 @@
 import React, { useState } from "react";
-import { auth } from "../../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebase";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
 
-  const handleLogin = async (e: any) => {
-    e.preventDefault();
+  const handleLogin = async (event: React.FormEvent) => {
+    event.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("User logged in successfully");
-      navigate("/TodoList");
-    } catch (error: any) {
-      alert(error.message);
+      // ログイン成功時の処理を追加
+    } catch (err) {
+      setError("ログインに失敗しました。");
     }
   };
 
   return (
-    <div className="container is-fluid">
-      <div className="box" style={{ maxWidth: "600px", margin: "0 auto" }}>
-        <form onSubmit={handleLogin}>
-          <div className="field">
-            <label className="label">Email</label>
-            <div className="control">
-              <input
-                className="input"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-              />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Password</label>
-            <div className="control">
-              <input
-                className="input"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-              />
-            </div>
-          </div>
-          <div className="field has-text-centered">
-            <div className="control">
-              <button className="button is-primary" type="submit">
-                Login
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
+    <div>
+      <h2>ログイン</h2>
+      <form onSubmit={handleLogin}>
+        <div>
+          <label htmlFor="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)} // onChangeハンドラーを追加
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)} // onChangeハンドラーを追加
+            required
+          />
+        </div>
+        <button type="submit">ログイン</button>
+      </form>
+      {error && <p>{error}</p>}
     </div>
   );
 };
