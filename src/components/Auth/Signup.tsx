@@ -1,13 +1,18 @@
 import React, { useState } from "react";
-import { auth } from "./firebase";
+import { auth } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const Signup: any = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSignup = async (e: any) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       alert("User registered successfully");
@@ -39,6 +44,17 @@ const Signup: any = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
+              />
+            </div>
+          </div>
+          <div>
+            <label>ConfirmPassword</label>
+            <div>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="ConfirmPassword"
               />
             </div>
           </div>
