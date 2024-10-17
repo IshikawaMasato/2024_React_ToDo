@@ -1,35 +1,29 @@
-// src/App.tsx
 import React, { useState, useEffect } from "react";
-import { auth } from "./firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import Signup from "./components/Auth/Signup";
+import "./App.css";
+// import LoadingSpinner from "./components/LoadingSpinner";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import AuthRoutes from "./routes/AuthRoutes";
+// import TodoList from "./components/ToDo/TodoList";
+// import AddTodo from "./components/ToDo/AddTodo";
+// import PrivateRoute from "./routes/PrivateRoute";
+// import Header from "./components/Header";
+import AuthRoutes from "./components/routes/AuthRoute";
 
-const App: React.FC = () => {
-  const [user, setUser] = useState<any>(null);
+const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-
-    return () => {
-      unsubscribe();
-    };
+    // Simulate loading
+    const timer = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div>
-      {user ? (
-        <div>
-          <h1>Welcome, {user.email}</h1>
-        </div>
-      ) : (
-        <div>
-          <Signup />
-          {/* ログイン画面のコンポーネントをここに追加予定 */}
-        </div>
-      )}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<AuthRoutes />} />
+      </Routes>
+    </Router>
   );
 };
 
