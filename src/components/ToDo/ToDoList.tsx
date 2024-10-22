@@ -21,6 +21,19 @@ const ToDoList: React.FC = () => {
       );
     }
   };
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const handleEditClick = (id: any) => {
+    setEditingTodoId(id);
+  };
+
+  const handleEditCancel = () => {
+    setEditingTodoId(null);
+  };
+
   return (
     <div>
       <h1>一覧画面</h1>
