@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Logout from "../Auth/Logout"; // Logoutコンポーネントをインポート
+import EditTodo from "./EditTodo";
 import { auth, db } from "../../firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
