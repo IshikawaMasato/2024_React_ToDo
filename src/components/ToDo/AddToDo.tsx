@@ -72,9 +72,8 @@ const AddTodo: React.FC = () => {
         setReminder("");
         setSelectedTags([""]);
         setSubtasks([""]);
-        alert("タスクを追加");
+        alert("タスクを追加しました");
       }
-
     } catch (error: any) {
       alert(error.message);
     }

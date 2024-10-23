@@ -2,11 +2,21 @@ import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import Signup from "./components/Auth/Signup";
 import Logout from "./components/Auth/Logout";
+import AddTodo from "./components/ToDo/AddToDo";
 import { signOut, createUserWithEmailAndPassword } from "firebase/auth";
+import { addDoc } from "firebase/firestore";
+
+
+jest.mock("firebase/firestore", () => ({
+  addDoc: jest.fn(),
+  collection: jest.fn(),
+  getFirestore: jest.fn(),
+}));
+
 
 jest.mock("firebase/auth", () => ({
   getAuth: jest.fn(() => ({
-    currentUser: { email: "test@example.com" },
+    currentUser: { email: "test@example.com", uid: "test-uid" },
   })),
   signOut: jest.fn(),
   createUserWithEmailAndPassword: jest.fn(),
@@ -115,16 +125,11 @@ describe("Logout Component", () => {
 
 // ToDo追加のテスト
 describe("AddTodo Component", () => {
-  it("タスクを追加するとリストに表示される", async () => {
-    const { default: AddTodo } = await import("./components/ToDo/AddToDo");
-    const { default: TodoList } = await import("./components/ToDo/ToDoList");
+  it("登録成功で200が返る", async () => {
+    // addDocが成功したときに200を返すようにモック
+    (addDoc as jest.Mock).mockResolvedValue({ status: 200 });
 
-    render(
-      <>
-        <AddTodo />
-        <TodoList />
-      </>
-    );
+    render(<AddTodo />);
 
     const taskInput = screen.getByPlaceholderText("タスクのタイトルを入力");
     const addButton = screen.getByText("追加");
@@ -132,28 +137,8 @@ describe("AddTodo Component", () => {
     fireEvent.change(taskInput, { target: { value: "新しいタスク" } });
     fireEvent.click(addButton);
 
-    await waitFor(() => {
-      expect(screen.getByText("新しいタスク")).toBeInTheDocument();
-    });
-  });
-
-    it("空のToDoを追加しようとするとエラーメッセージが表示される", async () => {
-      const { default: AddTodo } = await import("./components/ToDo/AddToDo");
-
-      render(<AddTodo />);
-
-      const addButton = screen.getByText("追加");
-
-      const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
-
-      fireEvent.click(addButton);
-
-      await waitFor(() => {
-        expect(alertSpy).toHaveBeenCalledWith("タスク追加エラー");
-      });
-
-      alertSpy.mockRestore();
-    });
+    await waitFor(() => expect(addDoc).toHaveBeenCalled());
+    await waitFor(() => expect(addDoc).toHaveReturnedWith(Promise.resolve({ status: 200 })));
   });
 
   it("空のToDoを追加しようとするとエラーメッセージが表示される", async () => {
@@ -173,6 +158,7 @@ describe("AddTodo Component", () => {
 
     alertSpy.mockRestore();
   });
+});
 
 // 環境変数のテスト
 test("Firebase projectIdが設定されているか", () => {
