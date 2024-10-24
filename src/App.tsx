@@ -4,7 +4,7 @@ import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import AuthRoutes from "./routes/AuthRoutes";
 import TodoList from "./components/ToDo/ToDoList";
-// import AddTodo from "./components/ToDo/AddTodo";
+import AddTodo from "./components/ToDo/AddToDo";
 // import PrivateRoute from "./routes/PrivateRoute";
 // import Header from "./components/Header";
 import AuthRoutes from "./components/routes/AuthRoutes";
@@ -14,6 +14,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<AuthRoutes />} />
+        <Route path="/add" element={<AddTodo />} />
         <Route path="/ToDoList" element={<TodoList />} />
       </Routes>
     </Router>

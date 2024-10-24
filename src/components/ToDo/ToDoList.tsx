@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Logout from "../Auth/Logout"; // Logoutコンポーネントをインポート
 import { auth, db } from "../../firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import AddTodo from "./AddToDo";
 
 // Todo型を定義
 interface Todo {
@@ -53,6 +54,12 @@ const ToDoList: React.FC = () => {
 
   return (
     <div>
+      <div>
+        タスク登録
+        <AddTodo />
+        <h1>一覧画面</h1>
+        <Logout /> {/* ログアウトボタンを追加 */}
+      </div>
       <div>
         <h1>一覧画面</h1>
         <Logout /> {/* ログアウトボタンを追加 */}
